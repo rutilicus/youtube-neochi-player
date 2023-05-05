@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>youtube-neochi-player</title>
+</head>
+<body>
+  <div id="player"></div>
+  <p>
+    <label>動画IDまたはURL : <input type="text" id="movieIdUrl"></label>
+    <button id="loadButton">読込</button>
+  </p>
+  <p>
+    <input type="checkbox" id="enableFunction" name="enableFunction">
+    <label for="enableFunction">機能有効化</label>  
+  </p>
+  <p>
+    <fieldset>
+      <legend>停止時間</legend>
+      <div>
+        <input type="radio" id="stopTimeChoice1" name="stopTime" value="second" checked />
+        <label for="stopTimeChoice1">秒数指定</label>
+        <input type="number" id="stopTimeSecond" value="0">
+      </div>
+      <div>
+        <input type="radio" id="stopTimeChoice2" name="stopTime" value="time" />
+        <label for="stopTimeChoice2">時間指定</label>
+        <input type="time" id="stopTimeTime" step="1"
+               value="00:00:00" pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}" disabled>
+      </div>
+    </fieldset>  
+  </p>
+  <p>
+    <input type="checkbox" id="enableFadeOut" name="enableFadeOut">
+    <label for="enableFadeOut">フェードアウト有効化</label>  
+  </p>
+  <p>
+    <fieldset>
+      <legend>フェードアウト設定</legend>
+      <label>フェードアウト秒数 : <input type="number" id="fadeOutSecond"></label>
+    </fieldset>
+  </p>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
