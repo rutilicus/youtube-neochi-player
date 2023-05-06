@@ -50,12 +50,50 @@ function onPlayerStateChange(event: YT.OnStateChangeEvent) {
     }
   }
 }
+function url2VideoId(url: URL): string {
+  switch (url.hostname) {
+    case 'www.youtube.com':
+      if (url.pathname == '/watch') {
+          // https://www.youtube.com/watch?v=VIDEOID形式
+          const id = url.searchParams.get('v')
+          if (id != null) {
+            return id;
+          }
+      } else if (url.pathname.match(/\/live\/[\w_-]{11}/g)) {
+        // https://www.youtube.com/live/VIDEOID?feature=share形式
+        return url.pathname.slice(-11);
+      }
+      break;
+
+    case 'youtu.be':
+      // https://youtu.be/VIDEOID形式
+      return url.pathname.slice(-11);
+  }
+
+  return '';
+}
 window.onYouTubeIframeAPIReady = () => {
-  player = new YT.Player('player', {
+  let opts: YT.PlayerOptions = {
     events: {
       'onStateChange': onPlayerStateChange
     }
-  });
+  };
+  try {
+    const url = (new URL(document.location.href)).searchParams.get('url');
+    if (url != null) {
+      const decodeUrl = decodeURIComponent(url);
+      const id = url2VideoId(new URL(decodeUrl));
+      if (id != '') {
+        // URLパラメータから動画URL取得時はYT.Playerオブジェクト生成時のオプションに追加と
+        // テキストボックスへの入力処理を行う
+        opts = {...opts, videoId: id};
+        (document.getElementById('movieIdUrl') as HTMLInputElement).value = decodeUrl;
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+  player = new YT.Player('player', opts);
 }
 
 const loadButton = document.getElementById('loadButton') as HTMLButtonElement;
@@ -63,27 +101,9 @@ if (loadButton != null) {
   loadButton.onclick = () => {
     const movieIdUrl = document.getElementById('movieIdUrl') as HTMLInputElement;
     try {
-      const url = new URL(movieIdUrl.value);
-      switch (url.hostname) {
-        case 'www.youtube.com':
-          if (url.pathname == '/watch') {
-              // https://www.youtube.com/watch?v=VIDEOID形式
-              const id = url.searchParams.get('v')
-              if (id != null) {
-                player.loadVideoById(id)
-              }
-          } else if (url.pathname.match(/\/live\/[\w_-]{11}/g)) {
-            // https://www.youtube.com/live/VIDEOID?feature=share形式
-            const id = url.pathname.slice(-11);
-            player.loadVideoById(id);
-          }
-          break;
-
-        case 'youtu.be':
-          // https://youtu.be/VIDEOID形式
-          const id = url.pathname.slice(-11);
-          player.loadVideoById(id);
-          break;
+      const id = url2VideoId(new URL(movieIdUrl.value));
+      if (id != '') {
+        player.loadVideoById(id);
       }
     } catch (e) {
       // ID指定を仮定して読み込む
