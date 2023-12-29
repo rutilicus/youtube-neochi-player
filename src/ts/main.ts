@@ -53,7 +53,8 @@ function onPlayerStateChange(event: YT.OnStateChangeEvent) {
 function url2VideoId(url: URL): string {
   switch (url.hostname) {
     case 'www.youtube.com':
-      if (url.pathname == '/watch') {
+    case 'youtube.com':
+        if (url.pathname == '/watch') {
           // https://www.youtube.com/watch?v=VIDEOID形式
           const id = url.searchParams.get('v')
           if (id != null) {
